@@ -1,3 +1,4 @@
+
 <main class="min-h-screen bg-slate-50 font-sans text-slate-800 p-4 sm:p-6 lg:p-8 flex flex-col">
   <div class="max-w-7xl mx-auto w-full flex-grow">
     
@@ -89,6 +90,32 @@
                 <div class="prose prose-slate max-w-none p-4 bg-slate-50 rounded-lg border border-slate-200" [innerHTML]="analysis()"></div>
               </div>
             }
+
+            <!-- New: Image Editing Section -->
+            <div class="pt-6 border-t border-slate-200">
+              <h3 class="text-xl font-semibold mb-3 text-slate-700">3. Uredite Fotografiju (Opcionalno)</h3>
+              <p class="text-slate-600 mb-4">Unesite upute za uređivanje kako biste dodatno prilagodili sliku (npr. "Dodaj retro filter" ili "Ukloni osobu u pozadini").</p>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <input 
+                  type="text" 
+                  [value]="editingPrompt()"
+                  (input)="onEditingPromptChange($event)"
+                  placeholder="Upišite svoj zahtjev za uređivanje..." 
+                  class="flex-grow p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none">
+                <button 
+                  (click)="applyImageEdit()" 
+                  [disabled]="isLoading() || !editingPrompt().trim()"
+                  class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 disabled:bg-indigo-300 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
+                  @if (isLoading()) {
+                    <i class="fa-solid fa-spinner animate-spin mr-3"></i>
+                    <span>Uređivanje...</span>
+                  } @else {
+                    <i class="fa-solid fa-magic-wand-sparkles mr-3"></i>
+                    <span>Primijeni Uređivanje</span>
+                  }
+                </button>
+              </div>
+            </div>
           </div>
         } @else {
           <div class="flex flex-col items-center justify-center h-full min-h-[300px] text-center bg-slate-50 rounded-lg p-6">
@@ -116,3 +143,4 @@
   </footer>
     
 </main>
+    

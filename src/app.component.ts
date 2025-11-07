@@ -15,10 +15,12 @@ export class AppComponent {
 
   uploadedImage = signal<string | null>(null);
   generatedImage = signal<SafeUrl | null>(null);
+  rawGeneratedImageBase64 = signal<string | null>(null); // Store raw base64 for subsequent edits
   analysis = signal<SafeHtml | null>(null);
   isLoading = signal<boolean>(false);
   loadingMessage = signal<string>('Analiziram Vašu fotografiju...');
   errorMessage = signal<string | null>(null);
+  editingPrompt = signal<string>('');
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
@@ -90,10 +92,52 @@ export class AppComponent {
       const imageBytes = await this.geminiService.generateProfessionalImage(analysisResult.prompt);
       const imageUrl = `data:image/png;base64,${imageBytes}`;
       this.generatedImage.set(this.sanitizer.bypassSecurityTrustUrl(imageUrl));
+      this.rawGeneratedImageBase64.set(imageBytes); // Store raw base64 for potential further edits
 
     } catch (error) {
       console.error('Error enhancing image:', error);
       this.errorMessage.set('Nije uspjelo poboljšanje slike. AI je možda preopterećen. Molimo pokušajte ponovno.');
+    } finally {
+      this.isLoading.set(false);
+      this.cdr.detectChanges();
+    }
+  }
+
+  onEditingPromptChange(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    this.editingPrompt.set(inputElement.value);
+  }
+
+  async applyImageEdit(): Promise<void> {
+    const base64Image = this.rawGeneratedImageBase64();
+    const editPrompt = this.editingPrompt().trim();
+
+    if (!base64Image || !editPrompt) {
+      this.errorMessage.set('Nema slike za uređivanje ili je upit za uređivanje prazan.');
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+    this.loadingMessage.set('Analiziram zahtjev za uređivanje...');
+    this.cdr.detectChanges();
+
+    try {
+      // Step 1: Generate a new prompt based on the current image and user's edit request
+      const newImageGenPrompt = await this.geminiService.generateImageEditPrompt(base64Image, editPrompt);
+
+      // Step 2: Use the new prompt to generate the edited image
+      this.loadingMessage.set('Generiram uređenu sliku...');
+      this.cdr.detectChanges();
+      const imageBytes = await this.geminiService.generateProfessionalImage(newImageGenPrompt);
+      const imageUrl = `data:image/png;base64,${imageBytes}`;
+      this.generatedImage.set(this.sanitizer.bypassSecurityTrustUrl(imageUrl));
+      this.rawGeneratedImageBase64.set(imageBytes); // Update raw base64 with the newly edited image
+      this.editingPrompt.set(''); // Clear the editing prompt after applying
+
+    } catch (error) {
+      console.error('Error applying image edit:', error);
+      this.errorMessage.set('Nije uspjelo uređivanje slike. AI je možda preopterećen ili zahtjev nije bio jasan. Molimo pokušajte ponovno.');
     } finally {
       this.isLoading.set(false);
       this.cdr.detectChanges();
@@ -107,7 +151,10 @@ export class AppComponent {
 
   private resetResults(): void {
     this.generatedImage.set(null);
+    this.rawGeneratedImageBase64.set(null);
     this.analysis.set(null);
     this.errorMessage.set(null);
+    this.editingPrompt.set('');
   }
 }
+    
