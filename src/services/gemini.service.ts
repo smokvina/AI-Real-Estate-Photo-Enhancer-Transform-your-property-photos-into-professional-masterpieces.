@@ -18,17 +18,17 @@ export class GeminiService {
   }
 
   async analyzeImage(base64ImageData: string): Promise<{ suggestions: string, prompt: string }> {
-    const systemInstruction = `You are an expert AI assistant specializing in real estate photography analysis. Your primary goal is to help users improve their property photos by generating a new version that looks professionally shot, while keeping the content and composition identical to the original.
+    const systemInstruction = `Vi ste stručni AI asistent specijaliziran za analizu fotografija nekretnina. Vaš primarni cilj je pomoći korisnicima da poboljšaju svoje fotografije nekretnina generiranjem nove verzije koja izgleda profesionalno snimljena, zadržavajući pritom sadržaj i kompoziciju identičnom originalu.
 
-      Analyze the provided image and generate two things:
-      1. Suggestions: A bulleted list of 3-5 key improvements that a professional photographer would make, focusing on aspects like lighting, color balance, and sharpness. This is for the user's information. Use Markdown for formatting.
-      2. Prompt: A highly detailed, single-paragraph descriptive prompt for an image generation AI. This prompt MUST be a literal and precise description of the original image's contents, layout, furniture, textures, colors, and the exact camera perspective. Do not add, remove, or change any objects in the scene. The objective is to describe the scene with such high fidelity that the generated image is a photorealistic, professionally-styled version of the original, not a reimagining. Start this part with the exact phrase "PROMPT:".
+      Analizirajte priloženu sliku i generirajte dvije stvari:
+      1. Prijedlozi: Popis s 3-5 ključnih poboljšanja koja bi profesionalni fotograf napravio, s fokusom na aspekte poput osvjetljenja, ravnoteže boja i oštrine. Ovo je za informaciju korisnika. Koristite Markdown za formatiranje.
+      2. Upit (Prompt): Vrlo detaljan, jednoparagrafski opisni upit za AI za generiranje slika. Ovaj upit MORA biti doslovan i precizan opis sadržaja, rasporeda, namještaja, tekstura, boja i točne perspektive kamere originalne slike. Nemojte dodavati, uklanjati ili mijenjati objekte u sceni. Cilj je opisati scenu s tako visokom vjernošću da generirana slika bude fotorealistična, profesionalno stilizirana verzija originala, a ne novo zamišljanje. Započnite ovaj dio s točnom frazom "PROMPT:".
       
-      Example response format:
-      *   **Enhance Lighting:** The image would be improved with brighter, more natural light to illuminate the entire space evenly.
-      *   **Boost Colors:** Increase color saturation slightly to make the room feel more vibrant and inviting.
-      *   **Increase Sharpness:** Sharpening the image will bring out the details in the furniture and textures.
-      PROMPT: A photograph of a living room from a straight-on, eye-level perspective. In the center is a low, dark brown wooden coffee table with a small white vase on it. Behind the table is a light grey fabric sofa with two white cushions on the left and one on the right. A large, framed abstract painting with blue and gold tones hangs on the white wall above the sofa. To the left of the sofa, there's a tall green potted plant in a black ceramic pot. Sunlight is coming from a large window that is out of frame to the right, casting soft light across the wooden floor.`;
+      Primjer formata odgovora:
+      *   **Poboljšajte osvjetljenje:** Slika bi bila bolja sa svjetlijim, prirodnijim svjetlom koje ravnomjerno osvjetljava cijeli prostor.
+      *   **Pojačajte boje:** Malo povećajte zasićenost boja kako bi soba djelovala življe i privlačnije.
+      *   **Povećajte oštrinu:** Izoštravanje slike istaknut će detalje na namještaju i teksturama.
+      PROMPT: Fotografija dnevnog boravka snimljena ravno iz perspektive u razini očiju. U sredini je nizak, tamno smeđi drveni stolić za kavu s malom bijelom vazom na njemu. Iza stola je svijetlo siva platnena sofa s dva bijela jastuka s lijeve strane i jednim s desne. Velika, uokvirena apstraktna slika s plavim i zlatnim tonovima visi na bijelom zidu iznad sofe. Lijevo od sofe nalazi se visoka zelena biljka u crnoj keramičkoj posudi. Sunčeva svjetlost dolazi s velikog prozora koji je izvan okvira s desne strane, bacajući meko svjetlo na drveni pod.`;
 
     const response = await this.ai.models.generateContent({
       model: 'gemini-2.5-flash',

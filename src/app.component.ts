@@ -17,7 +17,7 @@ export class AppComponent {
   generatedImage = signal<SafeUrl | null>(null);
   analysis = signal<SafeHtml | null>(null);
   isLoading = signal<boolean>(false);
-  loadingMessage = signal<string>('Analyzing your photo...');
+  loadingMessage = signal<string>('Analiziram Vašu fotografiju...');
   errorMessage = signal<string | null>(null);
 
   onDragOver(event: DragEvent) {
@@ -66,7 +66,7 @@ export class AppComponent {
       };
       reader.readAsDataURL(file);
     } else {
-      this.errorMessage.set('Please upload a valid image file (PNG, JPG, WebP).');
+      this.errorMessage.set('Molimo učitajte važeću slikovnu datoteku (PNG, JPG, WebP).');
     }
   }
 
@@ -78,14 +78,14 @@ export class AppComponent {
     this.resetResults();
     
     try {
-      this.loadingMessage.set('Analyzing lighting and composition...');
+      this.loadingMessage.set('Analiziram osvjetljenje i kompoziciju...');
       this.cdr.detectChanges();
       const base64Data = imageDataUrl.split(',')[1];
       const analysisResult = await this.geminiService.analyzeImage(base64Data);
       
       this.analysis.set(this.sanitizer.bypassSecurityTrustHtml(analysisResult.suggestions));
       
-      this.loadingMessage.set('Reimagining your photo with a professional touch...');
+      this.loadingMessage.set('Stvaram novu verziju Vaše fotografije s profesionalnim dodirom...');
       this.cdr.detectChanges();
       const imageBytes = await this.geminiService.generateProfessionalImage(analysisResult.prompt);
       const imageUrl = `data:image/png;base64,${imageBytes}`;
@@ -93,7 +93,7 @@ export class AppComponent {
 
     } catch (error) {
       console.error('Error enhancing image:', error);
-      this.errorMessage.set('Failed to enhance the image. The AI may be overloaded. Please try again.');
+      this.errorMessage.set('Nije uspjelo poboljšanje slike. AI je možda preopterećen. Molimo pokušajte ponovno.');
     } finally {
       this.isLoading.set(false);
       this.cdr.detectChanges();
